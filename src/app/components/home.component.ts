@@ -16,7 +16,7 @@ export class HomeComponent implements OnInit {
 
   timeOut = 1000 * 60 * 60;
   highAccuracy = true;
-  showCurrentPosition = true;
+  showCurrentPosition = false;
   locationTracked: {} = {};
 
   ngOnInit() {
