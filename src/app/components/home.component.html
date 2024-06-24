@@ -2,5 +2,10 @@
   <button type="button" (click)="switchTracker()">
     {{ showCurrentPosition ? 'Current location' :  'Tracked location'}}
   </button>
-  Home location {{ locationTracked | json}}
+  Home location
+  <div>
+    <code>
+      {{ locationTracked | json}}
+    </code>
+  </div>
 </section>

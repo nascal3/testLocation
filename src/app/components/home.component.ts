@@ -27,7 +27,7 @@ export class HomeComponent implements OnInit {
     if ("geolocation" in navigator) {
       this.showCurrentPosition ? this.currentPosition(navigator) : this.trackPosition(navigator);
     } else {
-      console.log( "Geolocation not available." );
+      console.error( "Geolocation not available." );
     }
   }
 
