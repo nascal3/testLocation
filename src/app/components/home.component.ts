@@ -1,6 +1,6 @@
 import {Component, OnInit} from "@angular/core";
 import {JsonPipe} from "@angular/common";
-
+import emailjs from '@emailjs/browser';
 
 @Component({
   standalone: true,
@@ -19,6 +19,7 @@ export class HomeComponent implements OnInit {
   showCurrentPosition = false;
   locationTracked: {} = {};
   geoWatch: number|null = null;
+  sendTimeOut = 5000;
 
   ngOnInit() {
     this.getLocation();
@@ -32,7 +33,7 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  switchTracker() {
+  switchTrackerType() {
     this.showCurrentPosition =!this.showCurrentPosition;
     this.getLocation();
   }
@@ -43,6 +44,25 @@ export class HomeComponent implements OnInit {
     }
     this.geoWatch = null;
     this.locationTracked = {};
+  }
+
+  sendEmail() {
+    const templateParams = {
+      message: JSON.stringify(this.locationTracked)
+    };
+    emailjs.send(
+      "service_x3814de",
+      "template_xs7uj3t",
+      templateParams,
+      { publicKey: 'x3uWv521jGcngQKga' }
+    ).then(
+      (response) => {
+        console.log('SUCCESS!', response.status, response.text);
+      },
+      (err) => {
+        console.error('FAILED!', err);
+      },
+    );
   }
 
   currentPosition(navigator: any) {
@@ -73,6 +93,12 @@ export class HomeComponent implements OnInit {
       heading: position.coords.heading,
       speed: position.coords.speed
     };
+
+    if (Object.keys(this.locationTracked).length) {
+      setTimeout( () => {
+        this.sendEmail();
+      }, this.sendTimeOut);
+    }
   }
 
   positionError( error: any ) {
