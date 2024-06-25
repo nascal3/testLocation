@@ -47,13 +47,10 @@ export class HomeComponent implements OnInit {
   }
 
   sendEmail() {
-    const templateParams = {
-      message: JSON.stringify(this.locationTracked)
-    };
     emailjs.send(
       "service_x3814de",
       "template_xs7uj3t",
-      templateParams,
+      { message: JSON.stringify(this.locationTracked) },
       { publicKey: 'x3uWv521jGcngQKga' }
     ).then(
       (response) => {
