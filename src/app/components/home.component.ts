@@ -18,6 +18,7 @@ export class HomeComponent implements OnInit {
   highAccuracy = true;
   showCurrentPosition = false;
   locationTracked: {} = {};
+  geoWatch: number|null = null;
 
   ngOnInit() {
     this.getLocation();
@@ -36,6 +37,14 @@ export class HomeComponent implements OnInit {
     this.getLocation();
   }
 
+  stopWatch() {
+    if (typeof this.geoWatch === "number") {
+      navigator.geolocation.clearWatch(this.geoWatch);
+    }
+    this.geoWatch = null;
+    this.locationTracked = {};
+  }
+
   currentPosition(navigator: any) {
     navigator.geolocation.getCurrentPosition( this.setCurrentPosition.bind(this), this.positionError.bind(this), {
       enableHighAccuracy: this.highAccuracy,
@@ -45,11 +54,13 @@ export class HomeComponent implements OnInit {
   }
 
   trackPosition(navigator: any) {
-    navigator.geolocation.watchPosition( this.setCurrentPosition.bind(this), this.positionError.bind(this), {
-      enableHighAccuracy: this.highAccuracy,
-      timeout: this.timeOut,
-      maximumAge: 0
-    });
+    if ( "watchPosition" in navigator.geolocation ) {
+      this.geoWatch = navigator.geolocation.watchPosition( this.setCurrentPosition.bind(this), this.positionError.bind(this), {
+        enableHighAccuracy: this.highAccuracy,
+        timeout: this.timeOut,
+        maximumAge: 0
+      });
+    }
   }
 
   setCurrentPosition( position: any ) {

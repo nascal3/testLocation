@@ -1,8 +1,12 @@
 <section>
   <button type="button" (click)="switchTracker()">
-    {{ showCurrentPosition ? 'Current location' :  'Tracked location'}}
+    {{ showCurrentPosition ? 'Current Location' :  'Track Location'}}
   </button>
-  Home location
+
+  <button type="button" (click)="stopWatch()">
+    Stop Tracking
+  </button>
+
   <div>
     <code>
       {{ locationTracked | json}}
