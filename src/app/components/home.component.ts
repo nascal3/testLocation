@@ -19,7 +19,7 @@ export class HomeComponent implements OnInit {
   showCurrentPosition = false;
   locationTracked: {} = {};
   geoWatch: number|null = null;
-  sendTimeOut = 5000;
+  sendTimeOut = 3000;
 
   ngOnInit() {
     this.getLocation();
