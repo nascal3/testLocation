@@ -1,4 +1,4 @@
-import {Component, OnInit} from "@angular/core";
+import {Component, OnDestroy, OnInit} from "@angular/core";
 import {JsonPipe} from "@angular/common";
 import emailjs from '@emailjs/browser';
 
@@ -12,17 +12,46 @@ import emailjs from '@emailjs/browser';
   styleUrls: ['./home.component.scss']
 })
 
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
 
   timeOut = 1000 * 60 * 60;
   highAccuracy = true;
   showCurrentPosition = false;
   locationTracked: {} = {};
   geoWatch: number|null = null;
+  geoWorker: Worker | null = null;
   sendTimeOut = 3000;
 
   ngOnInit() {
-    this.getLocation();
+    if (typeof Worker !== 'undefined') {
+      this.geoWorker = new Worker(new URL('../service/workers/geo-worker.js', import.meta.url));
+      this.geoWorker.onmessage = ({ data }) => {
+        if (data.type === 'location') {
+          this.setCurrentPosition(data.data);
+        } else if (data.type === 'error') {
+          this.positionError(data.data);
+        }
+      };
+      this.startTracking();
+    } else {
+      console.error('Web Workers are not supported in this environment.');
+    }
+  }
+
+  ngOnDestroy() {
+    this.stopTracking();
+  }
+
+  startTracking() {
+    if (this.geoWorker) {
+      this.geoWorker.postMessage('start');
+    }
+  }
+
+  stopTracking() {
+    if (this.geoWorker) {
+      this.geoWorker.postMessage('stop');
+    }
   }
 
   getLocation() {
@@ -31,11 +60,6 @@ export class HomeComponent implements OnInit {
     } else {
       console.error( "Geolocation not available." );
     }
-  }
-
-  switchTrackerType() {
-    this.showCurrentPosition =!this.showCurrentPosition;
-    this.getLocation();
   }
 
   stopWatch() {
@@ -90,6 +114,7 @@ export class HomeComponent implements OnInit {
       heading: position.coords.heading,
       speed: position.coords.speed
     };
+    debugger
 
     if (Object.keys(this.locationTracked).length) {
       setTimeout( () => {
@@ -99,6 +124,7 @@ export class HomeComponent implements OnInit {
   }
 
   positionError( error: any ) {
+    if (!error.code) return alert( error.message );
     switch( error.code ) {
       case error.PERMISSION_DENIED:
         alert( "User denied the request for Geolocation." );
