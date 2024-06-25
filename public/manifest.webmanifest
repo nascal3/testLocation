@@ -1,6 +1,6 @@
 {
-  "name": "trackLocations",
-  "short_name": "trackLocations",
+  "name": "Location Tracker",
+  "short_name": "Location Tracker",
   "theme_color": "#1976d2",
   "background_color": "#fafafa",
   "display": "standalone",
